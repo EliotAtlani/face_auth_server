@@ -131,7 +131,7 @@ async def auth_face(file: UploadFile = File(...), email: str = Form(...)):
 
     cropped_face = crop_image(img, faces[0])
 
-    # Embbeding
+    # Embbedings
     ibed = imgbeddings()
 
     embedding = ibed.to_embeddings(cropped_face)
