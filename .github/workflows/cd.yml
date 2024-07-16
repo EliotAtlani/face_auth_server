@@ -1,0 +1,19 @@
+name: CD Pipeline
+
+on:
+  workflow_run:
+    workflows: ["CI Pipeline"]
+    types:
+      - completed
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - name: Pull Docker image
+        run: sudo docker pull eliotatlani31/face-auth-server:latest
+      - name: Delete Old Docker
+        run: sudo docker rm -f face-auth-server || true
+      - name: Run Docker container
+        run: sudo docker run -d -p 8000:8000 --env-file .env face-auth-server

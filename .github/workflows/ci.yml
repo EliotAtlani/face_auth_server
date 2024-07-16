@@ -1,0 +1,21 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Login DockerHub
+        env:
+          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+        run: docker login -u eliotatlani31 -p $DOCKER_PASSWORD
+
+      - name: Build the Docker image
+        run: docker build -t eliotatlani31/face-auth-server:latest .
+      - name: Push to DockerHub
+        run: docker push eliotatlani31/face-auth-server:latest

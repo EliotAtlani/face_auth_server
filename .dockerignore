@@ -1,0 +1,23 @@
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore virtual environment directories
+venv/
+env/
+.venv/
+
+# Ignore version control directories and files
+.git/
+.gitignore
+
+# Ignore Dockerfile and Dockerignore file
+Dockerfile
+.dockerignore
+
+# Ignore other unwanted files and directories
+node_modules/
+npm-debug.log
+yarn.lock
+*.log
