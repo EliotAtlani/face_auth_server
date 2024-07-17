@@ -21,10 +21,12 @@ jobs:
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
           # Add more environment variables as needed
         run: |
           sudo docker run -d -p 8000:8000 \
           -e SECRET_KEY=${SECRET_KEY} \
           -e ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES} \
+          -e PINECONE_API_KEY=${PINECONE_API_KEY} \
           --name face-auth-server \
           eliotatlani31/face-auth-server
