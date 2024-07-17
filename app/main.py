@@ -149,7 +149,7 @@ async def validate_face_batch(
     )
 
 
-# Function to create JWT token
+# Function to create JWT tokens
 def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
     if expires_delta:
