@@ -12,11 +12,7 @@ jobs:
 
     steps:
       - name: Delete old images
-        run: |
-          images=$(sudo docker images --filter=reference='eliotatlani31/face-auth-server' --format "{{.ID}} {{.CreatedAt}}" | sort -k2 | head -n -1 | awk '{print $1}')
-          if [ -n "$images" ]; then
-            sudo docker rmi -f $images
-          fi
+        run: sudo docker system prune -a -f --volumes || true
       - name: Pull Docker image
         run: sudo docker pull eliotatlani31/face-auth-server:latest
       - name: Delete Old Docker
