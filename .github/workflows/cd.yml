@@ -16,4 +16,12 @@ jobs:
       - name: Delete Old Docker
         run: sudo docker rm -f face-auth-server || true
       - name: Run Docker container
-        run: sudo docker run -d -p 8000:8000 eliotatlani31/face-auth-server
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
+          # Add more environment variables as needed
+        run: |
+          sudo docker run -d -p 8000:8000 \
+          -e SECRET_KEY=${SECRET_KEY} \
+          -e ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES} \
+          eliotatlani31/face-auth-server

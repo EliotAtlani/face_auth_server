@@ -16,6 +16,7 @@ import jwt
 # Load environment variables from .env file
 load_dotenv()
 
+print(os.getenv("SECRET_KEY"))
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
