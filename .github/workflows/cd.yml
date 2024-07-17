@@ -16,4 +16,4 @@ jobs:
       - name: Delete Old Docker
         run: sudo docker rm -f face-auth-server || true
       - name: Run Docker container
-        run: sudo docker run -d -p 8000:8000 --env-file .env face-auth-server
+        run: sudo docker run -d -p 8000:8000 eliotatlani31/face-auth-server
