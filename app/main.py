@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import io
 from typing import List
 import numpy as np
-from fastapi import Depends, FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile, BackgroundTasks
 from fastapi.responses import JSONResponse, StreamingResponse
 from imgbeddings import imgbeddings
 from PIL import Image
@@ -13,6 +13,9 @@ from .helpers.crop_image import crop_image
 from .helpers.detect_faces import detect_faces
 import os
 import jwt
+import uuid
+from fastapi.middleware.cors import CORSMiddleware
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -24,11 +27,12 @@ ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
 pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
 index = pc.Index("facial-recognition")
 
+# Initialize the rate limiter
+
 
 app = FastAPI()
 
 # CORS
-from fastapi.middleware.cors import CORSMiddleware
 
 environment = os.getenv("ENVIRONMENT")
 
@@ -168,11 +172,26 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     return encoded_jwt
 
 
+def add_new_images_to_index(email: str, embedding):
+
+    uniqueId = str(uuid.uuid4())
+    # Upsert all embeddings into Pinecone
+    index.upsert(vectors=[{"id": uniqueId, "values": embedding}], namespace=email)
+    print("Added new image to index")
+
+
 @app.post("/auth-face/")
-async def auth_face(file: UploadFile = File(...), email: str = Form(...)):
+async def auth_face(
+    background_tasks: BackgroundTasks,
+    file: UploadFile = File(...),
+    email: str = Form(...),
+):
     # Read the image file
     contents = await file.read()
     image = Image.open(io.BytesIO(contents))
+
+    # Save image
+    image.save("image.jpg")
 
     faces, img = detect_faces(image)
 
@@ -194,17 +213,23 @@ async def auth_face(file: UploadFile = File(...), email: str = Form(...)):
         include_values=False,
     )
 
+    print(result)
+
     if len(result["matches"]) == 0:
         print("Face not authenticated")
         return JSONResponse(
-            content={"message": "Face not authenticated"}, status_code=404
+            content={"message": "Face not authenticated"}, status_code=403
         )
 
-    # Compute the mean of the best 5 result
-    mean = np.mean([result["matches"][i]["score"] for i in range(5)])
+    if len(result["matches"]) < 5:
+        mean = np.mean(
+            [result["matches"][i]["score"] for i in range(len(result["matches"]))]
+        )
+    else:
+        mean = np.mean([result["matches"][i]["score"] for i in range(5)])
 
     print("MEAN", mean)
-    if mean < 0.95:
+    if mean < 0.92:
         print("Face not authenticated")
         return JSONResponse(
             content={"message": "Face not authenticated"}, status_code=401
@@ -215,6 +240,8 @@ async def auth_face(file: UploadFile = File(...), email: str = Form(...)):
     access_token = create_access_token(
         data={"sub": email}, expires_delta=access_token_expires
     )
+
+    background_tasks.add_task(add_new_images_to_index, email, embedding[0].tolist())
 
     return JSONResponse(
         content={
