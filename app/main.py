@@ -195,7 +195,7 @@ async def check_email(email: str = Form(...)):
 
 @app.post("/detect-faces/")
 async def detect_faces_endpoint(file: UploadFile = File(...)):
-    # Read the image file
+    # Read the image files
     contents = await file.read()
     image = Image.open(io.BytesIO(contents))
 
