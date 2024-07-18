@@ -51,6 +51,11 @@ async def root():
     return {"message": "Hello World"}
 
 
+@app.get("/ping/")
+async def ping():
+    return {"message": "pong"}
+
+
 @app.post("/check-email/")
 async def check_email(email: str = Form(...)):
     result = index.query(
