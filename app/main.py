@@ -207,7 +207,7 @@ async def detect_faces_endpoint(file: UploadFile = File(...)):
 
     cropped_face = crop_image(img, faces[0])
 
-    # Convert cropped face to bytes
+    # Convert cropped face to byte
     buf = io.BytesIO()
     cropped_face.save(buf, format="JPEG")
     buf.seek(0)
