@@ -9,7 +9,8 @@ FaceAuth is a facial recognition system that allows you to connect to your accou
 The FaceAuth server is built with [FastAPI](https://fastapi.tiangolo.com) using Websocket.
 
 Images are send to the server and converted to embeddings. Thoses embeddings are store in a [PineconeAI](https://login.pinecone.io) vector store database. When a user try to log in, we transform this face into an embeddings and run a similarity check with the others vectors in the database.
- de
+
+
 NB: No images are stored or saved
 
 ## Installation
